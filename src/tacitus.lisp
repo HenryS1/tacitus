@@ -1,7 +1,8 @@
 (defpackage :tacitus
   (:use :cl :monad)
   (:export :between :to-array :append-ranges :reduce-range :index :memoization
-           :size
+           :range-size
+           :zip
            :fmap
            :flatmap
            :fmap-rec))
@@ -19,8 +20,12 @@
               :memoization (when memoize (lambda (i) (+ i start)))))
 
 (defun to-array (range &key (type t))
-  (let ((arr (make-array (range-size range) :element-type type :adjustable nil)))
-    (loop for i from 0 to (- (range-size range) 1)
+  (let ((arr (make-array (range-size range) :element-type type :adjustable nil))
+        (len (- (range-size range) 1))
+        (f (if (range-memoization range) (range-memoization range) (range-transformation range))))
+    (declare (optimize (speed 3))
+             (function f))
+    (loop for i fixnum from 0 to len
        do (setf (aref arr i) (index range i)))
     arr))
 
@@ -49,7 +54,7 @@
     (make-range :size (range-size range) 
                    :transformation (lambda (i) (funcall f (funcall old-f i)))
                    :memoization (when (range-memoization range)
-                                  (let* ((table (make-hash-table :test 'equal)))
+                                  (let ((table (make-hash-table :test 'equal)))
                                     (lambda (i)
                                       (if (gethash i table)
                                           (gethash i table)
@@ -69,6 +74,21 @@
 
 (defmethod flatmap (f (range range))
   (merge-ranges f range 0 (- (range-size range) 1)))
+
+(defun zip (one other)
+  (let* ((one-f (range-transformation one))
+         (other-f (range-transformation other))
+         (zip-f (lambda (i) (cons (funcall one-f i) (funcall other-f i)))))
+    (declare (function one-f other-f zip-f))
+    (make-range :size (min (range-size one) (range-size other)) 
+                :transformation zip-f
+                :memoization (when (or (range-memoization one) (range-memoization other))
+                               (let ((table (make-hash-table :test 'equal)))
+                                 (lambda (i)
+                                   (if (gethash i table)
+                                       (gethash i table)
+                                       (setf (gethash i table)
+                                             (funcall zip-f i)))))))))
 
 (defun index (range i)
   (when (< i (range-size range))
