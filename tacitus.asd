@@ -2,7 +2,7 @@
   :version "0.1.0"
   :author "Henry Steere"
   :license "MIT"
-  :depends-on ()
+  :depends-on (:salmon)
   :components ((:module "src"
                 :components
                 ((:file "tacitus"))))

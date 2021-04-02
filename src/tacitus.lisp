@@ -2,9 +2,11 @@
   (:use :cl :monad)
   (:export :between :to-array :append-ranges :reduce-range :index :memoization
            :size
+           :fmap
+           :flatmap
            :fmap-rec))
 
-(in-package :range)
+(in-package :tacitus)
 
 (defstruct range
   (size 0 :type integer)
@@ -13,8 +15,8 @@
 
 (defun between (start end &key (memoize nil))
   (make-range :size (+ (- end start) 1) 
-              :transformation #'identity
-              :memoization (when memoize #'identity)))
+              :transformation (lambda (i) (+ i start))
+              :memoization (when memoize (lambda (i) (+ i start)))))
 
 (defun to-array (range &key (type t))
   (let ((arr (make-array (range-size range) :element-type type :adjustable nil)))
