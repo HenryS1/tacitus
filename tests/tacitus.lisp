@@ -27,8 +27,10 @@
   (testing "return a transformed element from a transformed range"
     (ok (= (index (fmap (lambda (x) (* x 3)) (between 0 10)) 2) 6)))
   (testing "should return nil for an index outside the range"
-    (ok (null (index (between 4 6) 3)))
-    (ok (null (index (between 4 6) 7)))))
+    (ok (null (index (between 4 6) 3))))
+  (testing "not return nil for elements within the range"
+    (ok (= (index (between 4 6) 0) 4))
+    (ok (= (index (between 4 6) 2) 6))))
 
 (deftest fmap-rec
   (testing "should recurse on previous elements in a range"

@@ -91,7 +91,7 @@
                                              (funcall zip-f i)))))))))
 
 (defun index (range i)
-  (when (< i (range-size range))
+  (when (< -1 i (range-size range))
     (if (range-memoization range)
         (funcall (range-memoization range) i)
         (funcall (range-transformation range) i))))
