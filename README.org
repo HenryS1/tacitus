@@ -53,9 +53,45 @@ TACITUS> (index (between 5 10) 0)
 5
 #+end_src
 
+Ranges are space efficient.
+
+#+begin_src lisp
+TACITUS> (time (defparameter *big-range* (between 0 10000000)))
+(time (defparameter *big-range* (between 0 10000000)))
+Evaluation took:
+  0.000 seconds of real time
+  0.000009 seconds of total run time (0.000008 user, 0.000001 system)
+  100.00% CPU
+  12,699 processor cycles
+  0 bytes consed
+*BIG-RANGE*
+TACITUS> (time (defparameter *big-array* (make-array 10000000 :initial-element 0))) 
+Evaluation took:
+  0.064 seconds of real time
+  0.064315 seconds of total run time (0.039342 user, 0.024973 system)
+  [ Run times consist of 0.063 seconds GC time, and 0.002 seconds non-GC time. ]
+  100.00% CPU
+  115,095,924 processor cycles
+  80,000,016 bytes consed
+  
+*BIG-ARRAY*
+#+end_src
+
+Appending ranges is fast.
+
+#+begin_src lisp
+TACITUS> (time (append-ranges (between 0 10000000) (between 0 10000000)))
+Evaluation took:
+  0.000 seconds of real time
+  0.000003 seconds of total run time (0.000002 user, 0.000001 system)
+  100.00% CPU
+  2,647 processor cycles
+  0 bytes consed
+#+end_src
+
 ** Author
 
-+ Henry Steere
+Henry Steere
 
 ** Copyright
 
