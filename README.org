@@ -1,8 +1,56 @@
 * Tacitus 
 
+Tacitus provides lazy immutable indexable ranges with optional
+memoization. They support append in constant time, indexing in
+constant time and a single (not appended) range requires close to
+zero memory allocation.
+
 ** Usage
 
-** Installation
+Create a range with ~between~.
+
+#+begin_src lisp
+TACITUS> (between 0 100)
+#S(RANGE
+   :SIZE 101
+   :TRANSFORMATION #<CLOSURE (LAMBDA (I) :IN BETWEEN) {10039FA89B}>
+   :MEMOIZATION NIL)
+#+end_src
+
+Convert a range to an array with ~to-array~.
+
+#+begin_src lisp
+TACITUS> (to-array (between 0 5))
+#(0 1 2 3 4 5)
+#+end_src
+
+Transform a range with ~fmap~.
+
+#+begin_src lisp
+TACITUS> (to-array (fmap (lambda (n) (* n 3)) (between 4 8)))
+#(12 15 18 21 24)
+#+end_src
+
+Append ranges with ~append-ranges~.
+
+#+begin_src lisp
+TACITUS> (to-array (append-ranges (between 7 9) (between 0 4)))
+#(7 8 9 0 1 2 3 4)
+#+end_src
+
+Reduce ranges with ~reduce-range~.
+
+#+begin_src lisp
+TACITUS> (reduce-range #'+ (between 0 10))
+55
+#+end_src
+
+Index into a range with ~index~.
+
+#+begin_src lisp
+TACITUS> (index (between 5 10) 0)
+5
+#+end_src
 
 ** Author
 
