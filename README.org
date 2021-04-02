@@ -2,8 +2,9 @@
 
 Tacitus provides lazy immutable indexable ranges with optional
 memoization. They support append in constant time, indexing in
-constant time and a single (not appended) range requires close to
-zero memory allocation.
+constant time and a single (not appended) range requires close to zero
+memory allocation. Appending ranges allocates memory for closures so
+appending many small ranges gradually requires more memory.
 
 ** Usage
 
